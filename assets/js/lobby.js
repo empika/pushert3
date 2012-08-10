@@ -98,9 +98,9 @@ var T3Lobby = Class.extend({
     var lobby = this;
     
     // Enable pusher logging - don't include this in production
-    Pusher.log = function(message) {
-      if (window.console && window.console.log) window.console.log(message);
-    };
+    // Pusher.log = function(message) {
+    //  if (window.console && window.console.log) window.console.log(message);
+    // };
 
     this.pusher = new Pusher('0fd5d9f0e77aa7330f8e'),
     this.lobby_channel = this.pusher.subscribe(lobby.lobby_channel_name);
