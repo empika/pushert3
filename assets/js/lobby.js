@@ -96,7 +96,8 @@ var T3Lobby = Class.extend({
   */
   connect: function () {
     var lobby = this;
-    
+    lobby.invite_status.invite_in_progress = false;
+    lobby.invite_status.game_in_progress = false;
     // Enable pusher logging - don't include this in production
     Pusher.log = function(message) {
       if (window.console && window.console.log) window.console.log(message);
