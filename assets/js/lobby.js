@@ -23,16 +23,20 @@ var T3Lobby = Class.extend({
     }
   },
   
+  /*
+  * Allow players to set a name
+  */
   inputName: function () {
     var lobby = this;
     this.name_modal.find('div.modal-footer a.btn').click(function(event) {
       var errors = [],
-        body_errors = lobby.name_modal.find('div.modal-body div.errors');
+        body_errors = lobby.name_modal.find('div.modal-body div.errors'),
+        name_input = lobby.name_modal.find('div.modal-body form input').val();
 
       // reset our errrors
       body_errors.html('');
-
-      var name_input = lobby.name_modal.find('div.modal-body form input').val();
+      
+      // do some error checking
       if (name_input !== "") {
         if(name_input.length < 3) {
           errors.push({msg: "You got&apos;s to have at least 3 letters in your name, ok?"})
@@ -62,6 +66,7 @@ var T3Lobby = Class.extend({
     
     this.name_modal.modal({static: true});
   },
+  
   
   setName: function (player_name) {
     var success = $.post('name', 'player_name=' +  player_name, function(data) {
@@ -111,6 +116,9 @@ var T3Lobby = Class.extend({
   initializeComs: function () {
     var lobby = this;
     
+    /*
+    * Handle channel events
+    */
     this.lobby_channel.bind('pusher:subscription_succeeded', function(members) {
       localStorage.setItem('lobby-me', members.me);
       lobby.me = members.me;
@@ -146,7 +154,9 @@ var T3Lobby = Class.extend({
       }
     });
     
-    // handle an invitation from a player
+    /*
+    * Handle an incoming invitation
+    */
     this.lobby_channel.bind('client-invite-player', function(data) {
       if (!lobby.invite_status.invite_in_progress && data.their_id === lobby.me.id) {
         lobby.invite_status.invite_in_progress = true;
@@ -161,9 +171,8 @@ var T3Lobby = Class.extend({
           return true;
         });
         
-        /*
-        * disconnect form the lobby, set up a channel between the two players and start the actual game
-        */
+        
+        // disconnect form the lobby, set up a channel between the two players and start the actual game
         lobby.invite_modal.find('div.modal-footer a.btn.invite-accept').click(function(event) {
           lobby.invite_modal.modal('hide');
           triggered = lobby.lobby_channel.trigger('client-accept-invite', { opponent: lobby.me });
@@ -180,20 +189,23 @@ var T3Lobby = Class.extend({
       }
     });
     
-    // accept an invitation
+    /*
+    * Handle the response to a sent invitation
+    */
     this.lobby_channel.bind('client-accept-invite', function(data){
       lobby.accecptInvite(data);
     });
     
-    // handle a declined invitation
     this.lobby_channel.bind('client-decline-invite', function(data){
       lobby.declineInvite(data);
     });
     
-    
   },
   
-  // possibly break these out to a utils class?
+  /*
+  * Update the list of players in the lobby
+  * possibly break these out to a utils class?
+  */
   addMember: function ($table_body, id, info, me) {
     lobby = this;
     me = me || lobby.me;
@@ -215,7 +227,9 @@ var T3Lobby = Class.extend({
     $table_body.find('tr').remove();
   },
   
-  // invite a player
+  /*
+  * Handle invitations
+  */
   invitePlayer: function (lobby, id, event) {
     var player_name = $('#' + id + ' td:first').html(),
       triggered;
@@ -229,10 +243,7 @@ var T3Lobby = Class.extend({
       }
     }
   },
-  
-  /*
-  * Accept and invite and join the channel
-  */
+
   accecptInvite: function (response) {
     if (lobby.invite_status.invite_in_progress && lobby.invite_status.with_user_id === response.opponent.id) {
       lobby.pusher.unsubscribe(lobby.lobby_channel_name);

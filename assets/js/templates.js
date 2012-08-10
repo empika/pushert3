@@ -1,6 +1,8 @@
 var T3Templates = (function (){
   return {
-    // compile all the templates for efficient use later
+    /*
+    * compile all the templates for efficient use later
+    */
     // lobby templates
     player_table_row: _.template($('#player-table-row').html()),
     player_name_error: _.template($('#player-name-error').html()),

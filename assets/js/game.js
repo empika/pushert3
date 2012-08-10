@@ -9,6 +9,9 @@ var T3Game = Class.extend({
     this.initializeGameComs();
   },
   
+  /*
+  * Set our game up
+  */
   initializePlayfield: function () {
     $('#lobby').hide();
     $('#game').html(this.templates.game_table({
@@ -19,10 +22,15 @@ var T3Game = Class.extend({
     this.setTurnIndicator();
   },
   
+  /*
+  * Connect to the game channel and subscribe to the channel events
+  */
   initializeGameComs: function () {
     var game = this;
-    
-    // channel events
+  
+    /*
+    * Handle channel events
+    */
     this.game_channel.bind('pusher:subscription_succeeded', function(members) {
       game.initializePlayfield();
     });
@@ -36,7 +44,9 @@ var T3Game = Class.extend({
       // handle an opponent rage quitting
     });
     
-    // game events
+    /*
+    * Handle game events
+    */
     this.game_channel.bind('client-end-of-turn', function(data) {
       $opponent_move = $('#game-table tbody tr:eq(' + data.move_data.y + ') td:eq(' + data.move_data.x + ')');
       $opponent_move.html(game.templates.opponent_mark);
@@ -52,6 +62,9 @@ var T3Game = Class.extend({
     });
   },
   
+  /*
+  * Bind the mouse events for the field of play
+  */
   bindHoverEvents: function () {
     var game = this;
     $('#game-table tbody tr td').hover(
@@ -112,6 +125,10 @@ var T3Game = Class.extend({
     this.bindClickEvents();
   },
   
+  /*
+  * Handle the end of a turn.
+  * Check if the game has finished and set the state.
+  */
   endTurn: function (move_data) {
     var game_state = {};
     this.player_turn = false;
